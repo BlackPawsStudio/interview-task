@@ -1,20 +1,24 @@
-// src/stores/counter-store.ts
+"use client";
 import { createStore } from "zustand/vanilla";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { Home } from "@/types/home";
+import allHomes from "@/../public/1000_homes.json";
 
 export type FilterState = {
-  count: number;
+  filteredHomes: Home[];
+  coordinates: [number, number][][];
 };
 
 export type FilterActions = {
-  decrementCount: () => void;
-  incrementCount: () => void;
+  setFilteredHomes: (filteredHomes: Home[]) => void;
+  setCoordinates: (coordinates: [number, number][][]) => void;
 };
 
 export type FilterStore = FilterState & FilterActions;
 
 export const defaultInitState: FilterState = {
-  count: 0,
+  filteredHomes: [],
+  coordinates: [],
 };
 
 export const createFilterStore = (
@@ -24,8 +28,8 @@ export const createFilterStore = (
     persist(
       (set, get) => ({
         ...initState,
-        decrementCount: () => set((state) => ({ count: state.count - 1 })),
-        incrementCount: () => set((state) => ({ count: state.count + 1 })),
+        setFilteredHomes: (filteredHomes) => set({ filteredHomes }),
+        setCoordinates: (coordinates) => set({ coordinates }),
       }),
       {
         name: "filter-store",

@@ -1,13 +1,21 @@
+"use client";
 import { Home } from "@/types/home";
 import HomeTable from "./components/HomeTable";
-import homesData from "@/../public/1000_homes.json";
 import { MapDialog } from "./components/MapDialog";
+import { useFilterStore } from "@/providers/filter-store";
+import allHomes from "@/../public/1000_homes.json";
 
 export default function Page() {
-  const homes = homesData as Home[];
+  const filteredHomes = useFilterStore((s) => s.filteredHomes);
+  const coordinates = useFilterStore((s) => s.coordinates);
+
+  const homes =
+    filteredHomes.length > 0 || coordinates.length !== 0
+      ? filteredHomes
+      : (allHomes as Home[]);
 
   return (
-    <div className="max-w-7xl h-[80vh] mx-auto py-10">
+    <div className="max-w-7xl h-[80vh] mx-auto pb-10 pt-24">
       <MapDialog />
       <h1 className="mb-6 text-3xl font-bold text-gray-900">
         Expert Frontend Interview Task

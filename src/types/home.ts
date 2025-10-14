@@ -8,3 +8,7 @@ export type Home = {
   area: number | null;
   created_at: string;
 };
+
+export type CustomFeatureType = {
+  geometry: { coordinates: [number, number][] };
+};
