@@ -9,8 +9,8 @@ import {
 import { useFilterStore } from "@/providers/filter-store";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import allHomes from "@/../public/1000_homes.json";
-import { Home } from "@/types/home";
+import { latLngTuple } from "@/lib/schemas";
+import { getFilteredHomes } from "./Map";
 
 export const MapDialog = () => {
   const Map = useMemo(
@@ -22,17 +22,13 @@ export const MapDialog = () => {
     []
   );
 
-  const filteredHomes = useFilterStore((state) => state.filteredHomes);
   const coordinates = useFilterStore((state) => state.coordinates);
 
-  const homes =
-    filteredHomes.length > 0 || coordinates.length !== 0
-      ? filteredHomes
-      : (allHomes as Home[]);
+  const homes = useMemo(() => getFilteredHomes(coordinates[0]), [coordinates]);
 
   const markers = useMemo(() => {
     return homes.map((home) => ({
-      position: [home.lat, home.lng] as [number, number],
+      position: latLngTuple(home.lat, home.lng),
       label: home.address,
     }));
   }, [homes]);

@@ -5,6 +5,11 @@ import L, { FeatureGroup as LeafletFeatureGroup } from "leaflet";
 import "leaflet-draw";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { useFilterStore } from "@/providers/filter-store";
+import {
+  zFeature,
+  toLeafletLatLngsFromLngLatRing,
+  sanitizeGeoJsonFeature,
+} from "@/lib/schemas";
 
 export interface DrawControlProps {
   onPolygonCreated?: (feature: GeoJSON.Feature) => void;
@@ -52,23 +57,32 @@ export const DrawControl = ({
 
     const emitAllPolygons = () => {
       if (!drawnItemsRef.current) return;
-      const features: GeoJSON.Feature[] = drawnItemsRef.current
+      const raw = drawnItemsRef.current
         .getLayers()
         .map((l) => (l as any).toGeoJSON?.())
         .filter(Boolean);
-      onPolygonsChange?.({ type: "FeatureCollection", features });
+      const safeFeatures = raw
+        .map((f) => zFeature.safeParse(f))
+        .filter(
+          (
+            r
+          ): r is {
+            success: true;
+            data: typeof r extends { success: true; data: infer D } ? D : never;
+          } => r.success
+        )
+        .map((r) => sanitizeGeoJsonFeature(r.data));
+      onPolygonsChange?.({ type: "FeatureCollection", features: safeFeatures });
     };
 
     const onCreated = (e: L.LeafletEvent) => {
       const ev = e as L.DrawEvents.Created;
       const layer = ev.layer as L.Layer;
       drawnItems.addLayer(layer);
-      const feature = (layer as any).toGeoJSON?.() as
-        | GeoJSON.Feature
-        | undefined;
-      if (feature) {
-        onPolygonCreated?.(feature);
-      }
+      const raw = (layer as any).toGeoJSON?.();
+      const parsed = zFeature.safeParse(raw);
+      if (parsed.success)
+        onPolygonCreated?.(sanitizeGeoJsonFeature(parsed.data));
       emitAllPolygons();
     };
 
@@ -104,7 +118,7 @@ export const DrawControl = ({
     featureGroup.clearLayers();
 
     coordinates.forEach((ring) => {
-      const latLngs = ring.map(([lng, lat]) => [lat, lng] as [number, number]);
+      const latLngs = toLeafletLatLngsFromLngLatRing(ring);
       const polygonLayer = L.polygon(latLngs, {
         color: "#2563eb",
         weight: 2,

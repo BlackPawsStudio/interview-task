@@ -1,18 +1,14 @@
 "use client";
-import { Home } from "@/types/home";
+import { useMemo } from "react";
 import HomeTable from "./components/HomeTable";
 import { MapDialog } from "./components/MapDialog";
 import { useFilterStore } from "@/providers/filter-store";
-import allHomes from "@/../public/1000_homes.json";
+import { getFilteredHomes } from "./components/Map";
 
 export default function Page() {
-  const filteredHomes = useFilterStore((s) => s.filteredHomes);
   const coordinates = useFilterStore((s) => s.coordinates);
 
-  const homes =
-    filteredHomes.length > 0 || coordinates.length !== 0
-      ? filteredHomes
-      : (allHomes as Home[]);
+  const homes = useMemo(() => getFilteredHomes(coordinates[0]), [coordinates]);
 
   return (
     <div className="max-w-7xl h-[80vh] mx-auto pb-10 pt-24">
