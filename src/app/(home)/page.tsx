@@ -11,13 +11,13 @@ export default function Page() {
   const homes = useMemo(() => getFilteredHomes(coordinates[0]), [coordinates]);
 
   return (
-    <div className="max-w-7xl h-[80vh] mx-auto pb-10 pt-24">
+    <div className="max-w-7xl h-[80vh] mx-auto pb-10 pt-24 px-4">
       <MapDialog />
       <h1 className="mb-6 text-3xl font-bold text-gray-900">
         Expert Frontend Interview Task
       </h1>
 
-      <div className="w-full h-[calc(100%-56px)] flex flex-col">
+      <div className="w-full h-[calc(100%-56px)] flex flex-col mx-auto">
         <div className="flex-1 border border-gray-200 rounded-t-lg overflow-hidden shadow-sm">
           <HomeTable homes={homes} />
         </div>
