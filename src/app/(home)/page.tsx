@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import HomeTable from "./components/HomeTable";
 import { MapDialog } from "./components/MapDialog";
 import { useFilterStore } from "@/providers/filter-store";
-import { getFilteredHomes } from "./components/Map";
+import { getFilteredHomes } from "@/lib/homes";
 
 export default function Page() {
   const coordinates = useFilterStore((s) => s.coordinates);

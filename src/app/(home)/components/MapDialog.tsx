@@ -10,7 +10,7 @@ import { useFilterStore } from "@/providers/filter-store";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import { latLngTuple } from "@/lib/schemas";
-import { getFilteredHomes } from "./Map";
+import { getFilteredHomes } from "@/lib/homes";
 
 export const MapDialog = () => {
   const Map = useMemo(

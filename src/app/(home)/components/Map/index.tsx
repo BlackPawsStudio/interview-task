@@ -16,9 +16,6 @@ import {
   extractFirstRingFromFeatureCollection,
   toLeafletLatLngsFromLngLatRing,
 } from "@/lib/schemas";
-import { latLng, latLngBounds } from "leaflet";
-import homesData from "@/../public/1000_homes.json";
-import { zRingLngLat } from "@/lib/schemas";
 
 interface MapProps {
   markers: {
@@ -27,21 +24,6 @@ interface MapProps {
   }[];
   preview?: boolean;
 }
-
-
-export const getFilteredHomes = (coordinates: [number, number][]) => {
-  const valid = zRingLngLat.safeParse(coordinates);
-  if (!valid.success) return [];
-
-  // Convert ring bbox via leaflet util directly from [lng, lat] pairs
-  const bounds = latLngBounds(
-    valid.data.map(([lng, lat]) => [lat, lng] as [number, number])
-  );
-  const homesInside = homesData.filter((home) =>
-    bounds.contains(latLng(home.lng, home.lat))
-  );
-  return homesInside;
-};
 
 const MapComponent = ({ markers, preview }: MapProps) => {
   const positions = useMemo(() => markers.map((m) => m.position), [markers]);
